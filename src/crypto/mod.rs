@@ -1,6 +1,11 @@
 pub mod keystore;
 
-use std::{fs, path::Path, process::Command};
+use std::{
+    fs,
+    io::{Error, ErrorKind},
+    path::{Path, PathBuf},
+    process::Command,
+};
 
 use crate::utils::{git_ignore, out::print_out, unicode_messages::UMessage};
 
@@ -23,13 +28,13 @@ pub fn exists_secrets_dir(project_path: &Path) -> bool {
     secrets_dir.exists()
 }
 
-pub fn encrypt(file_path: &Path, key: &str) {
+pub fn encrypt(file_path: &Path, key: &str) -> Result<PathBuf, Error> {
     let file_dir = file_path.parent().unwrap();
     let file_in = file_path.file_name().unwrap().to_str().unwrap();
     let file_out = file_in.to_owned() + ".aes";
     let file_out = file_out.as_str();
 
-    Command::new("openssl")
+    let output = Command::new("openssl")
         .args(&[
             "enc",
             "-aes-256-cbc",
@@ -47,16 +52,26 @@ pub fn encrypt(file_path: &Path, key: &str) {
             key,
         ])
         .current_dir(file_dir)
-        .output()
-        .expect("Failed to encrypt file");
+        .output();
+
+    match output {
+        Ok(output) => {
+            if output.status.success() {
+                Ok(file_dir.join(file_out))
+            } else {
+                Err(Error::new(ErrorKind::Other, "Failed to encrypt file"))
+            }
+        }
+        Err(error) => Err(error),
+    }
 }
 
-pub fn decrypt(file_path: &Path, key: &str) {
+pub fn decrypt(file_path: &Path, key: &str) -> Result<PathBuf, Error> {
     let file_dir = file_path.parent().unwrap();
     let file_in = file_path.file_name().unwrap().to_str().unwrap();
     let file_out = &file_in[..file_in.len() - 4];
 
-    Command::new("openssl")
+    let output = Command::new("openssl")
         .args(&[
             "enc",
             "-d",
@@ -75,6 +90,16 @@ pub fn decrypt(file_path: &Path, key: &str) {
             key,
         ])
         .current_dir(file_dir)
-        .output()
-        .expect("Failed to decrypt file");
+        .output();
+
+    match output {
+        Ok(output) => {
+            if output.status.success() {
+                Ok(file_dir.join(file_out))
+            } else {
+                Err(Error::new(ErrorKind::Other, "Failed to decrypt file"))
+            }
+        }
+        Err(error) => Err(error),
+    }
 }
