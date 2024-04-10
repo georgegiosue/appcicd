@@ -1,0 +1,10 @@
+[package]
+name = "android_cicd"
+version = "0.1.0"
+edition = "2021"
+include = ["assets/*"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "4.5.4", features = ["unicode", "env", "derive"] }

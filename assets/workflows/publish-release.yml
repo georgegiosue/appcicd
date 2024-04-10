@@ -1,0 +1,151 @@
+name: Android CI / Publish Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+env:
+  ANDROID_ENV: "RELEASE"
+
+jobs:
+  build:
+    if: startsWith(github.ref, 'refs/tags/v')
+    name: Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_ENCRYPTION_KEY: ${{ secrets.RELEASE_ENCRYPTION_KEY }}
+      RELEASE_KEYSTORE_ENCRYPT_PATH: secrets/release-keystore.jks.aes
+      RELEASE_KEYSTORE_DECRYPT_PATH: secrets/release-keystore.jks
+      RELEASE_KEYSTORE_PASSWORD: ${{ secrets.RELEASE_KEYSTORE_PASSWORD }}
+      RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - run: git fetch --prune --unshallow
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decrypt the Storage Key
+        run: |
+          openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 100000 -salt -d -in $RELEASE_KEYSTORE_ENCRYPT_PATH -out $RELEASE_KEYSTORE_DECRYPT_PATH -k $RELEASE_ENCRYPTION_KEY
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease --parallel
+
+      - name: Build Release bundle
+        run: ./gradlew bundleRelease --parallel
+
+      - name: Cleanup secrets
+        if: always()
+        run: |
+          rm -rf secrets/*.jks
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
+
+  unit_tests:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - run: git fetch --prune --unshallow
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Android Test Report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }}
+
+  android_tests:
+    name: Android Test
+    runs-on: macos-12
+    needs: [build]
+    env:
+      DEBUG_ENCRYPTION_KEY: ${{ secrets.DEBUG_ENCRYPTION_KEY }}
+      DEBUG_KEYSTORE_ENCRYPT_PATH: secrets/debug-keystore.jks.aes
+      DEBUG_KEYSTORE_DECRYPT_PATH: secrets/debug-keystore.jks
+      DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
+      DEBUG_KEY_PASSWORD: ${{ secrets.DEBUG_KEY_PASSWORD }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - run: git fetch --prune --unshallow
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decrypt the Storage Key
+        run: |
+          openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 100000 -salt -d -in $DEBUG_KEYSTORE_ENCRYPT_PATH -out $DEBUG_KEYSTORE_DECRYPT_PATH -k $DEBUG_ENCRYPTION_KEY
+
+      - name: Run Instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedDebugAndroidTest
+
+      - name: Cleanup secrets
+        if: always()
+        run: |
+          rm -rf secrets/*.jks
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: [unit_tests, android_tests]
+    permissions:
+      contents: write
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: app-release
+          path: artifacts/
+
+      - name: Create Github Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            artifacts/bundle/release/*.aab
+            artifacts/apk/release/*.apk
