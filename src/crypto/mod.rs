@@ -103,3 +103,45 @@ pub fn decrypt(file_path: &Path, key: &str) -> Result<PathBuf, Error> {
         Err(error) => Err(error),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::env;
+
+    const FILE_NAME: &str = "text_file.txt";
+    const FILE_CONTENT: &str = "Hello, World!";
+    const KEY: &str = "mysecretkey";
+
+    #[test]
+    fn test_encrypt_file() {
+        let temp_dir = env::temp_dir();
+        let file_path = temp_dir.join(FILE_NAME);
+
+        std::fs::write(&file_path, FILE_CONTENT).expect("Failed to write file");
+
+        let encrypted_file_path = encrypt(&file_path, KEY).expect("Failed to encrypt file");
+
+        assert_eq!(encrypted_file_path.exists(), true)
+    }
+
+    #[test]
+    fn test_decrypt_file() {
+        let temp_dir = env::temp_dir();
+
+        let file_path = temp_dir.join(FILE_NAME);
+
+        // Encrypt test file again
+
+        std::fs::write(&file_path, FILE_CONTENT).expect("Failed to write file");
+
+        let file_encrypt_path = encrypt(&file_path, KEY).expect("Failed to encrypt file");
+
+        let file_decrypt_path = decrypt(&file_encrypt_path, KEY).expect("Failed to decrypt file");
+
+        let file_content =
+            std::fs::read_to_string(&file_decrypt_path).expect("Failed to read file");
+
+        assert_eq!(file_content, FILE_CONTENT)
+    }
+}
