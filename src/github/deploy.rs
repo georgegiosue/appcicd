@@ -3,7 +3,7 @@ use std::{
     path::Path,
 };
 
-use crate::utils::{out::print_out, unicode_messages::UMessage};
+use crate::cmd::rollback;
 
 pub fn copy_workflows(project_path: &Path) {
     let github_dotfiles_path = project_path.join(".github/");
@@ -34,9 +34,8 @@ pub fn copy_workflows(project_path: &Path) {
     for workflow in workflows {
         let path = github_dotfiles_path.join(workflow.1);
         if let Err(error) = fs::write(path, workflow.0) {
+            rollback::run(&project_path);
             panic!("Copy error {} workflow in .github | {}", workflow.1, error)
         }
     }
-
-    print_out(UMessage::SUCCESS("Workflow's has been added"));
 }

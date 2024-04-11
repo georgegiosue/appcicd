@@ -34,6 +34,8 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
     copy_workflows(&project_path);
 
+    print_out(UMessage::SUCCESS("Workflow's has been added"));
+
     if !exists_secrets_dir(&project_path) {
         create_secrets_dir(&project_path);
     } else {
