@@ -8,3 +8,4 @@ include = ["assets/*"]
 
 [dependencies]
 clap = { version = "4.5.4", features = ["unicode", "env", "derive"] }
+rand = "0.8.5"
