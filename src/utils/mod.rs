@@ -21,7 +21,10 @@ pub mod test {
     use std::{
         env, fs, io,
         path::{Path, PathBuf},
+        time::UNIX_EPOCH,
     };
+
+    use rand::Rng;
 
     fn find_project_path() -> Option<PathBuf> {
         let mut current_dir = env::current_dir().ok()?;
@@ -65,20 +68,32 @@ pub mod test {
             .join("android")
             .join("kotlindsl");
 
-        let temp_dir = env::temp_dir();
+        let timestamp = std::time::SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("Error to get current timestamp")
+            .as_millis()
+            .to_string();
+
+        let random: u32 = rand::thread_rng().gen();
+
+        let timestamp = timestamp + "+" + random.to_string().as_str();
+
+        let temp_dir = env::temp_dir().join(timestamp);
+
+        fs::create_dir(&temp_dir).expect("Error creating temp dir");
+
+        let groovy_dsl_temp_dir = temp_dir.join("groovydsl");
+        let kotlin_dsl_temp_dir = temp_dir.join("kotlindsl");
 
         if groovydsl_path.exists() {
-            copy_dir_all(groovydsl_path, temp_dir.join("groovydsl"))
+            copy_dir_all(groovydsl_path, &groovy_dsl_temp_dir)
                 .expect("Failed to copy groovydsl project to temp");
         }
         if kotlindsl_path.exists() {
-            copy_dir_all(kotlindsl_path, temp_dir.join("kotlindsl"))
+            copy_dir_all(kotlindsl_path, &kotlin_dsl_temp_dir)
                 .expect("Failed to copy kotlindsl project to temp");
         }
 
-        let groovy_project_temp_dir = temp_dir.join("groovydsl");
-        let kotlin_project_temp_dir = temp_dir.join("kotlindsl");
-
-        (groovy_project_temp_dir, kotlin_project_temp_dir)
+        (groovy_dsl_temp_dir, kotlin_dsl_temp_dir)
     }
 }
