@@ -59,12 +59,12 @@ pub mod test {
         let root_project_path = find_project_path().expect("Failed to find root project path");
 
         let groovydsl_path = root_project_path
-            .join("test")
+            .join("tests")
             .join("android")
             .join("groovydsl");
 
         let kotlindsl_path = root_project_path
-            .join("test")
+            .join("tests")
             .join("android")
             .join("kotlindsl");
 
