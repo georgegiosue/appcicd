@@ -13,3 +13,22 @@ pub fn openssl_installed() -> bool {
         Err(_) => false,
     }
 }
+
+#[cfg(target_os = "windows")]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_chocolatey_installed() {
+        let chocolatey_is_installed = chocolatey_installed();
+
+        assert_eq!(chocolatey_is_installed, true);
+    }
+
+    #[test]
+    fn test_openssl_installed() {
+        let openssl_is_installed = openssl_installed();
+
+        assert_eq!(openssl_is_installed, true);
+    }
+}
