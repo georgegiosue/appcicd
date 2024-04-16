@@ -83,3 +83,8 @@ pub fn replicate_android_project_to_temp(build_runtime: AndroidBuildRuntime) -> 
 
     android_project_temp_dir
 }
+
+pub fn clean_temp(android_project_path: PathBuf) {
+    fs::remove_dir_all(android_project_path.parent().unwrap())
+        .expect("Error clean project dir from temp directory");
+}

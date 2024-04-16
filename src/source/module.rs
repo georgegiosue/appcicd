@@ -102,7 +102,8 @@ pub mod build_src {
     mod test {
 
         use crate::{
-            build::runtime::AndroidBuildRuntime, utils::replicate_android_project_to_temp,
+            build::runtime::AndroidBuildRuntime,
+            utils::{clean_temp, replicate_android_project_to_temp},
         };
 
         use super::*;
@@ -119,7 +120,7 @@ pub mod build_src {
 
             assert_eq!(build_src_kotlin_path.exists(), true);
 
-            let _ = std::fs::remove_dir_all(kotlin_project_path);
+            clean_temp(kotlin_project_path);
         }
 
         #[test]
@@ -146,7 +147,7 @@ pub mod build_src {
 
             assert_eq!(kotlin_files_present, true);
 
-            let _ = std::fs::remove_dir_all(kotlin_project_path);
+            clean_temp(kotlin_project_path);
         }
     }
 }

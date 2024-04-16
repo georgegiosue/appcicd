@@ -22,7 +22,7 @@ pub fn create_github_dotfiles_dir(project_path: &Path) {
 #[cfg(test)]
 mod test {
 
-    use crate::{build::runtime::AndroidBuildRuntime, utils::replicate_android_project_to_temp};
+    use crate::{build::runtime::AndroidBuildRuntime, utils::{clean_temp, replicate_android_project_to_temp}};
 
     use super::*;
 
@@ -32,7 +32,7 @@ mod test {
 
         assert_eq!(exists_github_dotfiles_dir(&kotlin_project_path), false);
 
-        let _ = std::fs::remove_dir_all(kotlin_project_path);
+        clean_temp(kotlin_project_path);
     }
 
     #[test]
@@ -44,6 +44,6 @@ mod test {
 
         assert_eq!(kotlin_project_path.join(".github").exists(), true);
 
-        let _ = fs::remove_dir_all(kotlin_project_path);
+        clean_temp(kotlin_project_path);
     }
 }

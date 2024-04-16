@@ -45,7 +45,7 @@ mod test {
     use super::*;
     use crate::{
         build::runtime::AndroidBuildRuntime, github::create_github_dotfiles_dir,
-        utils::replicate_android_project_to_temp,
+        utils::{clean_temp, replicate_android_project_to_temp},
     };
 
     #[test]
@@ -72,6 +72,6 @@ mod test {
             assert_eq!(path.exists(), true);
         }
 
-        let _ = std::fs::remove_dir_all(kotlin_project_path);
+        clean_temp(kotlin_project_path);
     }
 }

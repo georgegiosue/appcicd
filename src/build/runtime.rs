@@ -54,7 +54,7 @@ mod tests {
 
     use super::*;
 
-    use crate::utils::replicate_android_project_to_temp;
+    use crate::utils::{clean_temp, replicate_android_project_to_temp};
 
     #[test]
     fn test_build_runtime() {
@@ -71,7 +71,7 @@ mod tests {
             AndroidBuildRuntime::KTS
         );
 
-        let _ = std::fs::remove_dir_all(groovy_project_path);
-        let _ = std::fs::remove_dir_all(kotlin_project_path);
+        clean_temp(groovy_project_path);
+        clean_temp(kotlin_project_path);
     }
 }
