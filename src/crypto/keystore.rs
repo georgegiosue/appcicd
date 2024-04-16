@@ -53,7 +53,13 @@ pub fn create_debug_keystore(secrets_path: &Path) -> KeyStore {
         return debug_keystore;
     }
 
-    let java_home = std::env::var("JAVA_HOME").expect("JAVA_HOME is not defined");
+    let java_home = match std::env::var("JAVA_HOME") {
+        Ok(java_home_env) => java_home_env,
+        Err(error) => {
+            rollback::run(secrets_path.parent().unwrap());
+            panic!("JAVA_HOME not found. Make sure you have installed JDK | {}", error);
+        }
+    };
 
     let keytool_path = Path::new(&java_home).join("bin").join("keytool");
 
@@ -129,7 +135,13 @@ pub fn create_release_keystore(secrets_path: &Path) -> KeyStore {
         return release_keystore;
     }
 
-    let java_home = std::env::var("JAVA_HOME").expect("JAVA_HOME is not defined");
+    let java_home = match std::env::var("JAVA_HOME") {
+        Ok(java_home_env) => java_home_env,
+        Err(error) => {
+            rollback::run(secrets_path.parent().unwrap());
+            panic!("JAVA_HOME not found | {}", error);
+        }
+    };
 
     let keytool_path = Path::new(&java_home).join("bin").join("keytool");
 
