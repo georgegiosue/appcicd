@@ -25,7 +25,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
     if !exists_build_src_dir(&project_path) {
         create_build_src_module(&project_path);
     } else {
-        copy_kotlin_files(&project_path);
+        copy_kotlin_files(&project_path).expect("Error creating kotlin files for versioning");
         print_out(UMessage::SUCCESS(
             "buildSrc module is present and prepared for versioning",
         ));
