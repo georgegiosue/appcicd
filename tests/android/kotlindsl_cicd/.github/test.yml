@@ -1,0 +1,72 @@
+name: Testing
+on:
+  pull_request:
+    branches:
+      - "*"
+
+jobs:
+  unit_tests:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - run: git fetch --prune --unshallow
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Run Unit tests
+        run: ./gradlew testDebugUnitTest
+
+      - name: Android Test Report
+        uses: asadmansr/android-test-report-action@v1.2.0
+        if: ${{ always() }}
+
+  android_tests:
+    name: Android Test
+    runs-on: macos-12
+    env:
+      DEBUG_ENCRYPTION_KEY: ${{ secrets.DEBUG_ENCRYPTION_KEY }}
+      DEBUG_KEYSTORE_ENCRYPT_PATH: secrets/debug-keystore.jks.aes
+      DEBUG_KEYSTORE_DECRYPT_PATH: secrets/debug-keystore.jks
+      DEBUG_KEYSTORE_PASSWORD: ${{ secrets.DEBUG_KEYSTORE_PASSWORD }}
+      DEBUG_KEY_PASSWORD: ${{ secrets.DEBUG_KEY_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - run: git fetch --prune --unshallow
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: "17"
+          distribution: "temurin"
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Decrypt the Storage Key
+        run: |
+          openssl enc -aes-256-cbc -md sha512 -pbkdf2 -iter 100000 -salt -d -in $DEBUG_KEYSTORE_ENCRYPT_PATH -out $DEBUG_KEYSTORE_DECRYPT_PATH -k $DEBUG_ENCRYPTION_KEY
+
+      - name: Run Instrumented tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 29
+          script: ./gradlew connectedDebugAndroidTest
+
+      - name: Cleanup secrets
+        if: always()
+        run: |
+          rm -rf secrets/*.jks

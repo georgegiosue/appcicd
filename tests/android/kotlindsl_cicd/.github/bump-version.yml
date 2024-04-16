@@ -1,0 +1,73 @@
+name: Bump version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Semver type of new version (major / minor / patch)'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - run: git fetch --prune --unshallow
+
+      - name: Get latest tag
+        id: get_latest_tag
+        run: echo "LATEST_VERSION=$(git describe --tags --abbrev=0 | cut -c1-6)" >> $GITHUB_ENV
+
+      - name: Split version
+        id: split_version
+        run: |
+          MAJOR=$(echo $LATEST_VERSION | cut -c2)
+          MINOR=$(echo $LATEST_VERSION | cut -d. -f2)
+          PATCH=$(echo $LATEST_VERSION | cut -d. -f3)
+          
+          # if patch is empty, set it to 0
+          if [ -z "$PATCH" ]; then
+            PATCH=0
+            echo "::warning::⚠️ Patch value is empty, setting it to 0"
+          fi
+
+          echo "MAJOR=$MAJOR" >> $GITHUB_ENV
+          echo "MINOR=$MINOR" >> $GITHUB_ENV
+          echo "PATCH=$PATCH" >> $GITHUB_ENV
+
+      - name: Set version
+        id: set_version
+        run: |
+          case "${{ github.event.inputs.version }}" in
+            major) MAJOR=$((MAJOR+1)); MINOR=0; PATCH=0;;
+            minor) MINOR=$((MINOR+1)); PATCH=0;;
+            patch) PATCH=$((PATCH+1));;
+          esac
+          
+          NEW_VERSION="v$MAJOR.$MINOR.$PATCH"
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+
+      - name: Set tag
+        id: set_tag
+        run: |
+          git tag $NEW_VERSION
+
+      - name: Push tag
+        if: success()
+        run: |
+          git push --tags origin &&
+          echo "::group::🚀 Release Version $NEW_VERSION"
+          echo "Version $NEW_VERSION has been successfully released."
+          echo "The publication process will begin shortly."
+          echo "::endgroup::"
