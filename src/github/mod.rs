@@ -22,36 +22,28 @@ pub fn create_github_dotfiles_dir(project_path: &Path) {
 #[cfg(test)]
 mod test {
 
-    use crate::utils::test::replicate_android_projects_to_temp;
+    use crate::{build::runtime::AndroidBuildRuntime, utils::replicate_android_project_to_temp};
 
     use super::*;
 
     #[test]
     fn test_exists_github_dotfiles_dir() {
-        let (groovydsl_project_path, kotlindsl_project_path) = replicate_android_projects_to_temp();
+        let kotlin_project_path = replicate_android_project_to_temp(AndroidBuildRuntime::KTS);
 
-        assert_eq!(exists_github_dotfiles_dir(&groovydsl_project_path), false);
-        assert_eq!(exists_github_dotfiles_dir(&kotlindsl_project_path), false);
+        assert_eq!(exists_github_dotfiles_dir(&kotlin_project_path), false);
 
-        let _ = std::fs::remove_dir_all(groovydsl_project_path);
-        let _ = std::fs::remove_dir_all(kotlindsl_project_path);
+        let _ = std::fs::remove_dir_all(kotlin_project_path);
     }
 
     #[test]
     fn test_create_github_dotfiles_dir() {
-        let (groovydsl_project_path, kotlindsl_project_path) = replicate_android_projects_to_temp();
+        let kotlin_project_path = replicate_android_project_to_temp(AndroidBuildRuntime::KTS);
 
-        fs::create_dir(&groovydsl_project_path.join(".github"))
-            .expect("Error creating .github dir in groovy dsl project");
-
-        assert_eq!(groovydsl_project_path.join(".github").exists(), true);
-
-        fs::create_dir(&kotlindsl_project_path.join(".github"))
+        fs::create_dir(&kotlin_project_path.join(".github"))
             .expect("Error creating .github dir in kotlin dsl project");
 
-        assert_eq!(kotlindsl_project_path.join(".github").exists(), true);
+        assert_eq!(kotlin_project_path.join(".github").exists(), true);
 
-        let _ = fs::remove_dir_all(groovydsl_project_path);
-        let _ = fs::remove_dir_all(kotlindsl_project_path);
+        let _ = fs::remove_dir_all(kotlin_project_path);
     }
 }

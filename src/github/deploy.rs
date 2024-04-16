@@ -44,12 +44,13 @@ pub fn copy_workflows(project_path: &Path) {
 mod test {
     use super::*;
     use crate::{
-        github::create_github_dotfiles_dir, utils::test::replicate_android_projects_to_temp,
+        build::runtime::AndroidBuildRuntime, github::create_github_dotfiles_dir,
+        utils::replicate_android_project_to_temp,
     };
 
     #[test]
     fn test_copy_workflows() {
-        let (groovy_project_path, kotlin_project_path) = replicate_android_projects_to_temp();
+        let kotlin_project_path = replicate_android_project_to_temp(AndroidBuildRuntime::KTS);
 
         let workflows: [&str; 5] = [
             "bump-version.yml",
@@ -59,20 +60,11 @@ mod test {
             "test.yml",
         ];
 
-        create_github_dotfiles_dir(&groovy_project_path);
         create_github_dotfiles_dir(&kotlin_project_path);
 
-        let groovydsl_github_dotfiles_path = groovy_project_path.join(".github");
         let kotlindsl_github_dotfiles_path = kotlin_project_path.join(".github");
 
-        copy_workflows(&groovy_project_path);
         copy_workflows(&kotlin_project_path);
-
-        for workflow in workflows {
-            let path = groovydsl_github_dotfiles_path.join(workflow);
-
-            assert_eq!(path.exists(), true);
-        }
 
         for workflow in workflows {
             let path = kotlindsl_github_dotfiles_path.join(workflow);
@@ -80,7 +72,6 @@ mod test {
             assert_eq!(path.exists(), true);
         }
 
-        let _ = std::fs::remove_dir_all(groovy_project_path);
         let _ = std::fs::remove_dir_all(kotlin_project_path);
     }
 }

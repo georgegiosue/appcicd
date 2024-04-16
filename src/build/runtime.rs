@@ -16,8 +16,8 @@ pub enum BuildType {
 impl fmt::Display for AndroidBuildRuntime {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            AndroidBuildRuntime::GROOVY => write!(f, "Groovy DSL"),
-            AndroidBuildRuntime::KTS => write!(f, "Kotlin DSL"),
+            AndroidBuildRuntime::GROOVY => write!(f, "groovydsl"),
+            AndroidBuildRuntime::KTS => write!(f, "kotlindsl"),
         }
     }
 }
@@ -52,13 +52,14 @@ pub fn get_build_runtime(path: &Path) -> AndroidBuildRuntime {
 #[cfg(test)]
 mod tests {
 
-    use crate::utils::test::replicate_android_projects_to_temp;
-
     use super::*;
+
+    use crate::utils::replicate_android_project_to_temp;
 
     #[test]
     fn test_build_runtime() {
-        let (groovy_project_path, kotlin_project_path) = replicate_android_projects_to_temp();
+        let groovy_project_path = replicate_android_project_to_temp(AndroidBuildRuntime::GROOVY);
+        let kotlin_project_path = replicate_android_project_to_temp(AndroidBuildRuntime::KTS);
 
         assert_eq!(
             get_build_runtime(&groovy_project_path),

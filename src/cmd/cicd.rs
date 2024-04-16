@@ -17,8 +17,13 @@ use crate::{
 };
 
 pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
+
+    if *build_runtime == AndroidBuildRuntime::GROOVY {
+        panic_out(UMessage::WARNING("Unsupported Groovy DSL"))
+    }
+
     if !exists_build_src_dir(&project_path) {
-        create_build_src_module(&project_path, &build_runtime);
+        create_build_src_module(&project_path);
     } else {
         copy_kotlin_files(&project_path);
         print_out(UMessage::SUCCESS(

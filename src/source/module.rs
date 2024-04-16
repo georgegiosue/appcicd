@@ -5,7 +5,9 @@ pub mod build_src {
     };
 
     use crate::{
-        build::runtime::AndroidBuildRuntime, cmd::rollback, config::constants, utils::{git_ignore, out::print_out, unicode_messages::UMessage}
+        cmd::rollback,
+        config::constants,
+        utils::{git_ignore, out::print_out, unicode_messages::UMessage},
     };
 
     pub fn exists_build_src_dir(path: &Path) -> bool {
@@ -15,7 +17,7 @@ pub mod build_src {
             .exists()
     }
 
-    pub fn create_build_src_module(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
+    pub fn create_build_src_module(project_path: &Path) {
         let build_src_path = Path::new(&project_path).join(constants::BUILD_SRC_DIRNAME);
 
         let build_src_kotlin_path = build_src_path.join("src").join("main").join("kotlin");
@@ -26,31 +28,19 @@ pub mod build_src {
 
         git_ignore(&build_src_path, files_to_ignore);
 
-        copy_build_script(&build_runtime, &build_src_path);
+        copy_build_script(&build_src_path);
 
         copy_kotlin_files(&project_path);
 
         print_out(UMessage::SUCCESS("buildSrc module created successfully"))
     }
 
-    fn copy_build_script(build_runtime: &AndroidBuildRuntime, buid_src_path: &Path) {
-        match build_runtime {
-            AndroidBuildRuntime::GROOVY => {
-                let script = include_bytes!("./../../assets/scripts/build.gradle");
-                let script_destination_path = buid_src_path.join("build.gradle");
+    fn copy_build_script(buid_src_path: &Path) {
+        let script = include_bytes!("./../../assets/scripts/build.gradle.kts");
+        let script_destination_path = buid_src_path.join("build.gradle.kts");
 
-                if let Err(error) = std::fs::write(script_destination_path, script) {
-                    panic!("Error copying build.gradle | {}", error)
-                }
-            }
-            AndroidBuildRuntime::KTS => {
-                let script = include_bytes!("./../../assets/scripts/build.gradle.kts");
-                let script_destination_path = buid_src_path.join("build.gradle.kts");
-
-                if let Err(error) = std::fs::write(script_destination_path, script) {
-                    panic!("Error copying build.gradle.kts | {}", error)
-                }
-            }
+        if let Err(error) = std::fs::write(script_destination_path, script) {
+            panic!("Error copying build.gradle.kts | {}", error)
         }
     }
 
