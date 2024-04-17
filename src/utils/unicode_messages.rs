@@ -7,6 +7,7 @@ pub enum UMessage<'a> {
     ERROR(&'a str),
     DEPLOY(&'a str),
     PWD(&'a str),
+    INPUT(&'a str),
     ROLLBACK(&'a str),
 }
 
@@ -19,6 +20,7 @@ impl<'a> fmt::Display for UMessage<'a> {
             UMessage::ERROR(msg) => write!(f, "❌ {}", msg),
             UMessage::DEPLOY(msg) => write!(f, "🚀 {}", msg),
             UMessage::PWD(msg) => write!(f, "🔑 {}", msg),
+            UMessage::INPUT(msg) => write!(f, "📝 {}", msg),
             UMessage::ROLLBACK(msg) => write!(f, "↩️ {}", msg),
         }
     }

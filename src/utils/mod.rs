@@ -95,3 +95,12 @@ pub fn clean_temp(android_project_path: PathBuf) {
     fs::remove_dir_all(android_project_path.parent().unwrap())
         .expect("Error clean project dir from temp directory");
 }
+
+pub fn input() -> String {
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read line");
+
+    input.trim().to_string()
+}
