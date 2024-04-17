@@ -60,15 +60,7 @@ pub fn replicate_android_project_to_temp(build_runtime: AndroidBuildRuntime) -> 
         .join("android")
         .join(build_runtime.to_string());
 
-    let timestamp = std::time::SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Error to get current timestamp")
-        .as_millis()
-        .to_string();
-
-    let random: u32 = rand::thread_rng().gen();
-
-    let dir_name = format!("{}_{}_{}", "test", timestamp, random.to_string());
+    let dir_name = gen_random_dir_name("test");
 
     let temp_dir = env::temp_dir().join(dir_name);
 
@@ -82,6 +74,21 @@ pub fn replicate_android_project_to_temp(build_runtime: AndroidBuildRuntime) -> 
     }
 
     android_project_temp_dir
+}
+
+pub fn gen_random_dir_name(prefix: &str) -> String {
+
+    let timestamp = std::time::SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Error to get current timestamp")
+        .as_millis()
+        .to_string();
+
+    let random: u32 = rand::thread_rng().gen();
+
+    let dir_name = format!("{}_{}_{}", prefix, timestamp, random.to_string());
+
+    dir_name
 }
 
 pub fn clean_temp(android_project_path: PathBuf) {
