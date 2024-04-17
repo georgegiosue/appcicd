@@ -106,6 +106,10 @@ pub fn decrypt(file_path: &Path, key: &str) -> Result<PathBuf, Error> {
 
 #[cfg(test)]
 mod tests {
+    use rand::Rng;
+
+    use crate::utils::gen_random_dir_name;
+
     use super::*;
     use std::env;
 
@@ -116,18 +120,33 @@ mod tests {
     #[test]
     fn test_encrypt_file() {
         let temp_dir = env::temp_dir();
+
+        let dir_name = gen_random_dir_name("test");
+
+        let temp_dir = temp_dir.join(dir_name);
+
+        fs::create_dir(&temp_dir).expect("Error creating temp dir");
+
         let file_path = temp_dir.join(FILE_NAME);
 
         std::fs::write(&file_path, FILE_CONTENT).expect("Failed to write file");
 
         let encrypted_file_path = encrypt(&file_path, KEY).expect("Failed to encrypt file");
 
-        assert_eq!(encrypted_file_path.exists(), true)
+        assert_eq!(encrypted_file_path.exists(), true);
+
+        fs::remove_dir_all(temp_dir).unwrap();
     }
 
     #[test]
     fn test_decrypt_file() {
         let temp_dir = env::temp_dir();
+
+        let dir_name = gen_random_dir_name("test");
+
+        let temp_dir = temp_dir.join(dir_name);
+
+        fs::create_dir(&temp_dir).expect("Error creating temp dir");
 
         let file_path = temp_dir.join(FILE_NAME);
 
@@ -137,11 +156,17 @@ mod tests {
 
         let file_encrypt_path = encrypt(&file_path, KEY).expect("Failed to encrypt file");
 
+        // Remove file before decrypt
+
+        fs::remove_file(&file_path).expect("Error removing file before decrypt");
+
         let file_decrypt_path = decrypt(&file_encrypt_path, KEY).expect("Failed to decrypt file");
 
         let file_content =
             std::fs::read_to_string(&file_decrypt_path).expect("Failed to read file");
 
-        assert_eq!(file_content, FILE_CONTENT)
+        assert_eq!(file_content, FILE_CONTENT);
+
+        fs::remove_dir_all(temp_dir).unwrap();
     }
 }
