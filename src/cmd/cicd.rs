@@ -11,13 +11,13 @@ use crate::{
     platform::{chocolatey_installed, openssl_installed},
     source::module::build_src::{copy_kotlin_files, create_build_src_module, exists_build_src_dir},
     utils::{
+        input,
         out::{panic_out, print_out},
         unicode_messages::UMessage,
     },
 };
 
 pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
-
     if *build_runtime == AndroidBuildRuntime::GROOVY {
         panic_out(UMessage::WARNING("Unsupported Groovy DSL"))
     }
@@ -63,16 +63,42 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
                 panic_out(UMessage::WARNING("OpenSSL is not installed"));
             }
 
-            encrypt_keystore(&debug_keystore);
-            encrypt_keystore(&release_keystore);
+            print_out(UMessage::PWD(
+                "Please enter your key for encrypt Debug KeyStore",
+            ));
 
-            print_out(UMessage::SUCCESS("Keystore has been encrypted"));
+            let debug_key = input();
+
+            encrypt_keystore(&debug_keystore, debug_key);
+
+            print_out(UMessage::PWD(
+                "Please enter your key for encrypt Release KeyStore",
+            ));
+
+            let release_key = input();
+
+            encrypt_keystore(&release_keystore, release_key);
+
+            print_out(UMessage::SUCCESS("Keystore's has been encrypted"));
         }
         "linux" | "mascos" => {
-            encrypt_keystore(&debug_keystore);
-            encrypt_keystore(&release_keystore);
+            print_out(UMessage::PWD(
+                "Please enter your key for encrypt Debug KeyStore",
+            ));
 
-            print_out(UMessage::SUCCESS("Keystore has been encrypted"));
+            let debug_key = input();
+
+            encrypt_keystore(&debug_keystore, debug_key);
+
+            print_out(UMessage::PWD(
+                "Please enter your key for encrypt Release KeyStore",
+            ));
+
+            let release_key = input();
+
+            encrypt_keystore(&release_keystore, release_key);
+
+            print_out(UMessage::SUCCESS("Keystore's has been encrypted"));
         }
         _ => {
             panic_out(UMessage::ERROR("Unsupported OS"));

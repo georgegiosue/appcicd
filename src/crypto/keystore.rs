@@ -244,12 +244,10 @@ pub fn create_release_keystore(secrets_path: &Path) -> KeyStore {
     release_keystore
 }
 
-pub fn encrypt_keystore(keystore: &KeyStore) -> PathBuf {
+pub fn encrypt_keystore(keystore: &KeyStore, key: String) -> PathBuf {
     let keystore_path = keystore.path.as_path();
-    let keystore_pwd = keystore.pwd.as_str();
 
-    let keystore_encrypt_path =
-        encrypt(keystore_path, keystore_pwd).expect("Error encrypting keystore");
+    let keystore_encrypt_path = encrypt(keystore_path, &key).expect("Error encrypting keystore");
 
     keystore_encrypt_path
 }
