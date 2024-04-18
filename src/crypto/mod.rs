@@ -106,7 +106,6 @@ pub fn decrypt(file_path: &Path, key: &str) -> Result<PathBuf, Error> {
 
 #[cfg(test)]
 mod tests {
-    use rand::Rng;
 
     use crate::utils::gen_random_dir_name;
 
