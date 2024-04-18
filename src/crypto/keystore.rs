@@ -15,10 +15,16 @@ use crate::{
 
 use super::encrypt;
 
+enum EncOpenSSL {
+    ENCRYPTED(String),
+    DECRYPTED,
+}
+
 pub struct KeyStore {
     pub path: PathBuf,
     pub build_type: BuildType,
     pub pwd: String,
+    pub enc: EncOpenSSL,
 }
 
 impl KeyStore {
@@ -27,6 +33,7 @@ impl KeyStore {
             path,
             build_type,
             pwd,
+            enc: EncOpenSSL::DECRYPTED,
         }
     }
 }
@@ -244,10 +251,10 @@ pub fn create_release_keystore(secrets_path: &Path) -> KeyStore {
     release_keystore
 }
 
-pub fn encrypt_keystore(keystore: &KeyStore, key: String) -> PathBuf {
+pub fn encrypt_keystore(keystore: &mut KeyStore, key: String) {
     let keystore_path = keystore.path.as_path();
 
-    let keystore_encrypt_path = encrypt(keystore_path, &key).expect("Error encrypting keystore");
+    encrypt(keystore_path, &key).expect("Error encrypting keystore");
 
-    keystore_encrypt_path
+    keystore.enc = EncOpenSSL::ENCRYPTED(key);
 }

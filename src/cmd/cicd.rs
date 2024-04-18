@@ -49,9 +49,9 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
     let secrets_dir = project_path.join("secrets");
 
-    let debug_keystore: KeyStore = create_debug_keystore(&secrets_dir);
+    let mut debug_keystore: KeyStore = create_debug_keystore(&secrets_dir);
 
-    let release_keystore: KeyStore = create_release_keystore(&secrets_dir);
+    let mut release_keystore: KeyStore = create_release_keystore(&secrets_dir);
 
     match constants::OS {
         "windows" => {
@@ -69,7 +69,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             let debug_key = input();
 
-            encrypt_keystore(&debug_keystore, debug_key);
+            encrypt_keystore(&mut debug_keystore, debug_key);
 
             print_out(UMessage::PWD(
                 "Please enter your key for encrypt Release KeyStore",
@@ -77,7 +77,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             let release_key = input();
 
-            encrypt_keystore(&release_keystore, release_key);
+            encrypt_keystore(&mut release_keystore, release_key);
 
             print_out(UMessage::SUCCESS("Keystore's has been encrypted"));
         }
@@ -88,7 +88,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             let debug_key = input();
 
-            encrypt_keystore(&debug_keystore, debug_key);
+            encrypt_keystore(&mut debug_keystore, debug_key);
 
             print_out(UMessage::PWD(
                 "Please enter your key for encrypt Release KeyStore",
@@ -96,7 +96,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             let release_key = input();
 
-            encrypt_keystore(&release_keystore, release_key);
+            encrypt_keystore(&mut release_keystore, release_key);
 
             print_out(UMessage::SUCCESS("Keystore's has been encrypted"));
         }
