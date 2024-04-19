@@ -18,7 +18,7 @@ fn test_e2e_rollback() {
         .arg("--manifest-path")
         .arg(&cargo_manifest)
         .arg("--")
-        .arg("--rollback")
+        .arg("rollback")
         .current_dir(&kotlin_project_path)
         .output()
         .expect("Error executing rollback");
@@ -41,14 +41,12 @@ mod utils {
 
     #[derive(PartialEq, Debug)]
     pub enum AndroidBuildRuntime {
-        GROOVY,
         KTS { cicd: bool },
     }
 
     impl fmt::Display for AndroidBuildRuntime {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
             match self {
-                AndroidBuildRuntime::GROOVY => write!(f, "groovydsl"),
                 AndroidBuildRuntime::KTS { cicd: false } => write!(f, "kotlindsl"),
                 AndroidBuildRuntime::KTS { cicd: true } => write!(f, "kotlindsl_cicd"),
             }

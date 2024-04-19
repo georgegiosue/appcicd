@@ -26,7 +26,7 @@ mod test {
 
     use crate::{
         build::runtime::AndroidBuildRuntime,
-        utils::{clean_temp, replicate_android_project_to_temp},
+        utils::test::{clean_temp, replicate_android_project_to_temp},
     };
 
     use super::*;

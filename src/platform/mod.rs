@@ -14,6 +14,7 @@ pub fn openssl_installed() -> bool {
     }
 }
 
+#[cfg(test)]
 #[cfg(target_os = "windows")]
 mod test {
     use super::*;

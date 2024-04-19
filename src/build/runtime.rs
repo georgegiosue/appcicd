@@ -45,7 +45,7 @@ mod tests {
 
     use super::*;
 
-    use crate::utils::{clean_temp, replicate_android_project_to_temp};
+    use crate::utils::test::{clean_temp, replicate_android_project_to_temp};
 
     #[test]
     fn test_build_runtime() {

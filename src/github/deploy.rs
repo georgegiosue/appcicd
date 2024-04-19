@@ -44,8 +44,9 @@ pub fn copy_workflows(project_path: &Path) {
 mod test {
     use super::*;
     use crate::{
-        build::runtime::AndroidBuildRuntime, github::create_github_dotfiles_dir,
-        utils::{clean_temp, replicate_android_project_to_temp},
+        build::runtime::AndroidBuildRuntime,
+        github::create_github_dotfiles_dir,
+        utils::test::{clean_temp, replicate_android_project_to_temp},
     };
 
     #[test]

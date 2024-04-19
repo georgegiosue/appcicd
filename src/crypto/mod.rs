@@ -7,7 +7,10 @@ use std::{
     process::Command,
 };
 
-use crate::{utils::{git_ignore, unicode_messages::UMessage}, verbose_println};
+use crate::{
+    utils::{git_ignore, unicode_messages::UMessage},
+    verbose_println,
+};
 
 pub fn create_secrets_dir(project_path: &Path) {
     let secrets_dir = project_path.join("secrets");
@@ -107,7 +110,7 @@ pub fn decrypt(file_path: &Path, key: &str) -> Result<PathBuf, Error> {
 #[cfg(test)]
 mod tests {
 
-    use crate::utils::gen_random_dir_name;
+    use crate::utils::test::gen_random_dir_name;
 
     use super::*;
     use std::env;
