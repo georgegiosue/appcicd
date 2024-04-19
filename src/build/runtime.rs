@@ -1,6 +1,6 @@
 use std::{fmt, path::Path};
 
-use crate::utils::{out::panic_out, unicode_messages::UMessage};
+use crate::utils::check_android_project;
 
 #[derive(PartialEq, Debug)]
 pub enum AndroidBuildRuntime {
@@ -23,16 +23,7 @@ impl fmt::Display for AndroidBuildRuntime {
 }
 
 pub fn get_build_runtime(path: &Path) -> AndroidBuildRuntime {
-    let android_files = ["gradlew", "gradle.properties"];
-
-    let all_files_present = android_files
-        .iter()
-        .map(|file_name| Path::new(&path).join(file_name).exists())
-        .all(|file_present| file_present);
-
-    if !all_files_present {
-        panic_out(UMessage::ERROR("The folder no contains a Android Project"));
-    }
+    check_android_project(path);
 
     let kts_files = ["build.gradle.kts", "settings.gradle.kts"];
 

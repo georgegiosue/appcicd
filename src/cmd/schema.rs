@@ -1,14 +1,43 @@
-use clap::Parser;
+use clap::{Args, Parser, Subcommand};
 
 /// Android CI/CD utility 🚀
-#[derive(Parser, Debug)]
-#[command(version, about, long_about = None)]
-pub struct Args {
-    /// Path of Android project
-    #[arg(short, long)]
-    pub path: Option<String>,
+#[derive(Debug, Parser)]
+#[clap(name = "android_cicd", version, about, long_about=None, author)]
+pub struct AndroidCICD {
+    #[clap(flatten)]
+    pub global_opts: GlobalOpts,
 
-    /// Rollback changes
-    #[arg(short, long)]
-    pub rollback: bool,
+    #[clap(subcommand)]
+    pub command: Command,
+}
+
+#[derive(Debug, Subcommand)]
+pub enum Command {
+    /// Rollback to before CI/CD changes
+    Rollback,
+
+    /// CI/CD operations
+    CICD,
+
+    /// Auth with GitHub
+    #[clap(subcommand)]
+    Auth(AuthSubcommand),
+}
+
+#[derive(Debug, Subcommand)]
+pub enum AuthSubcommand {
+    /// Login with GitHub
+    Login,
+    /// Logout from GitHub
+    Logout,
+}
+
+#[derive(Debug, Args)]
+pub struct GlobalOpts {
+    /// Verbosity level
+    #[clap(long, short, global = true, default_value = "false")]
+    pub verbose: bool,
+
+    #[clap(long, short = 'p', global = true)]
+    pub path: Option<String>,
 }

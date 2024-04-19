@@ -7,10 +7,13 @@ use crate::{
     crypto::exists_secrets_dir,
     github::exists_github_dotfiles_dir,
     source::module::build_src::exists_build_src_dir,
-    utils::{out::print_out, unicode_messages::UMessage},
+    utils::{check_android_project, out::print_out, unicode_messages::UMessage},
 };
 
 pub fn run(project_path: &Path) {
+
+    check_android_project(project_path);
+
     // path: .github/
 
     if exists_github_dotfiles_dir(project_path) {

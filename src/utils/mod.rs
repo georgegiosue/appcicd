@@ -8,6 +8,8 @@ use rand::Rng;
 
 use crate::build::runtime::AndroidBuildRuntime;
 
+use self::{out::panic_out, unicode_messages::UMessage};
+
 pub mod out;
 pub mod unicode_messages;
 
@@ -77,7 +79,6 @@ pub fn replicate_android_project_to_temp(build_runtime: AndroidBuildRuntime) -> 
 }
 
 pub fn gen_random_dir_name(prefix: &str) -> String {
-
     let timestamp = std::time::SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("Error to get current timestamp")
@@ -103,4 +104,17 @@ pub fn input() -> String {
         .expect("Failed to read line");
 
     input.trim().to_string()
+}
+
+pub fn check_android_project(path: &Path) {
+    let android_files = ["gradlew", "gradle.properties"];
+
+    let all_files_present = android_files
+        .iter()
+        .map(|file_name| Path::new(&path).join(file_name).exists())
+        .all(|file_present| file_present);
+
+    if !all_files_present {
+        panic_out(UMessage::ERROR("The folder no contains a Android Project"));
+    }
 }

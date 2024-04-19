@@ -1,6 +1,6 @@
 [package]
 name = "android_cicd"
-description = "Continuous Integration and Delivery (CI/CD) tool for Android applications"
+description = "Continuous Integration and Delivery (CI/CD) tool for Android applications 🚀"
 version = "0.1.0"
 authors = ["George <peraldonamoc@gmail.com>"]
 edition = "2021"
