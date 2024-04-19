@@ -7,13 +7,13 @@ use std::{
     process::Command,
 };
 
-use crate::utils::{git_ignore, out::print_out, unicode_messages::UMessage};
+use crate::{utils::{git_ignore, unicode_messages::UMessage}, verbose_println};
 
 pub fn create_secrets_dir(project_path: &Path) {
     let secrets_dir = project_path.join("secrets");
 
     match fs::create_dir(secrets_dir.as_path()) {
-        Ok(_) => print_out(UMessage::SUCCESS("Secrets dir has been created")),
+        Ok(_) => verbose_println!("{}", UMessage::SUCCESS("Secrets dir has been created")),
         Err(error) => panic!("Error creating Secrets dir | {}", error),
     }
 

@@ -1,6 +1,9 @@
 use std::{fs, path::Path};
 
-use crate::utils::{out::print_out, unicode_messages::UMessage};
+use crate::{
+    utils::unicode_messages::UMessage,
+    verbose_println,
+};
 
 pub mod deploy;
 
@@ -12,9 +15,8 @@ pub fn create_github_dotfiles_dir(project_path: &Path) {
     let github_dotfiles_path = project_path.join(".github/");
 
     match fs::create_dir(github_dotfiles_path.as_path()) {
-        Ok(_) => {
-            print_out(UMessage::SUCCESS("The .github dir has been created."));
-        }
+        Ok(_) => verbose_println!("{}", UMessage::SUCCESS("The .github dir has been created.")),
+
         Err(error) => panic!("Error creating .github directory | {}", error),
     };
 }
@@ -22,7 +24,10 @@ pub fn create_github_dotfiles_dir(project_path: &Path) {
 #[cfg(test)]
 mod test {
 
-    use crate::{build::runtime::AndroidBuildRuntime, utils::{clean_temp, replicate_android_project_to_temp}};
+    use crate::{
+        build::runtime::AndroidBuildRuntime,
+        utils::{clean_temp, replicate_android_project_to_temp},
+    };
 
     use super::*;
 

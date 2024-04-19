@@ -15,6 +15,7 @@ use crate::{
         out::{panic_out, print_out},
         unicode_messages::UMessage,
     },
+    verbose_println,
 };
 
 pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
@@ -34,7 +35,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
     if !exists_github_dotfiles_dir(&project_path) {
         create_github_dotfiles_dir(&project_path)
     } else {
-        print_out(UMessage::SUCCESS(".github directory is present"));
+        verbose_println!("{}", UMessage::SUCCESS(".github directory is present"));
     }
 
     copy_workflows(&project_path);
@@ -44,7 +45,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
     if !exists_secrets_dir(&project_path) {
         create_secrets_dir(&project_path);
     } else {
-        print_out(UMessage::SUCCESS("secrets directory is present"));
+        verbose_println!("{}", UMessage::SUCCESS("secrets directory is present"));
     }
 
     let secrets_dir = project_path.join("secrets");
@@ -79,7 +80,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             encrypt_keystore(&mut release_keystore, release_key);
 
-            print_out(UMessage::SUCCESS("Keystore's has been encrypted"));
+            print_out(UMessage::SUCCESS("Keystores have been encrypted"));
         }
         "linux" | "mascos" => {
             print_out(UMessage::PWD(
@@ -98,7 +99,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             encrypt_keystore(&mut release_keystore, release_key);
 
-            print_out(UMessage::SUCCESS("Keystore's has been encrypted"));
+            print_out(UMessage::SUCCESS("Keystores have been encrypted"));
         }
         _ => {
             panic_out(UMessage::ERROR("Unsupported OS"));
