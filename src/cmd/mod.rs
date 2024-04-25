@@ -32,7 +32,7 @@ pub fn make() {
     set_verbose(verbose);
 
     match command {
-        Command::CICD => {
+        Command::SetUp => {
             let build_runtime: AndroidBuildRuntime = get_build_runtime(&project_path);
 
             cicd::run(&project_path, &build_runtime);

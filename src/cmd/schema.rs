@@ -2,7 +2,7 @@ use clap::{Args, Parser, Subcommand};
 
 /// Android CI/CD utility 🚀
 #[derive(Debug, Parser)]
-#[clap(name = "android_cicd", version, about, long_about=None, author)]
+#[clap(name = "appcicd", version, about, long_about=None, author)]
 pub struct AndroidCICD {
     #[clap(flatten)]
     pub global_opts: GlobalOpts,
@@ -16,8 +16,8 @@ pub enum Command {
     /// Rollback to before CI/CD changes
     Rollback,
 
-    /// CI/CD operations
-    CICD,
+    /// Set up CI/CD
+    SetUp,
 
     /// Auth with GitHub
     #[clap(subcommand)]

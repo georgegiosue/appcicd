@@ -1,5 +1,5 @@
 [package]
-name = "android_cicd"
+name = "appcicd"
 description = "Continuous Integration and Delivery (CI/CD) tool for Android applications 🚀"
 version = "0.1.0"
 authors = ["George <peraldonamoc@gmail.com>"]
@@ -8,6 +8,7 @@ readme = "README.md"
 repository = "https://github.com/georgegiosue/android_cicd"
 license-file = "LICENSE"
 keywords = [
+    "appcicd",
     "android",
     "ci",
     "cd",

@@ -3,14 +3,6 @@
 version = 3
 
 [[package]]
-name = "android_cicd"
-version = "0.1.0"
-dependencies = [
- "clap",
- "rand",
-]
-
-[[package]]
 name = "anstream"
 version = "0.6.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -56,6 +48,14 @@ checksum = "1cd54b81ec8d6180e24654d0b371ad22fc3dd083b6ff8ba325b72e00c87660a7"
 dependencies = [
  "anstyle",
  "windows-sys",
+]
+
+[[package]]
+name = "appcicd"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "rand",
 ]
 
 [[package]]
