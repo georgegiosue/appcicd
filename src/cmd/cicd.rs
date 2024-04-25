@@ -82,7 +82,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
 
             print_out(UMessage::SUCCESS("Keystores have been encrypted"));
         }
-        "linux" | "mascos" => {
+        "linux" | "macos" => {
             print_out(UMessage::PWD(
                 "Please enter your key for encrypt Debug KeyStore",
             ));
