@@ -105,7 +105,7 @@ pub fn run(project_path: &Path, build_runtime: &AndroidBuildRuntime) {
             panic_out(UMessage::ERROR("Unsupported OS"));
         }
     }
-    //TODO: Binging config chucks to app/build.gradle.kts
+    //TODO: Binding config chucks to app/build.gradle.kts
     //TODO: Github Auth
     //TODO: Secrets upload throught Github REST API
     print_out(UMessage::DEPLOY("Ready. Confirm and push to GitHub."))
